@@ -1,0 +1,10 @@
+org/team10/fundflow/Configs/Campaign.class
+org/team10/fundflow/Repositories/CampaignRepository.class
+com/example/transferdemo/UserService.class
+com/example/transferdemo/User.class
+org/team10/fundflow/Services/CampaignService.class
+org/team10/fundflow/FundFlowApplication.class
+org/team10/fundflow/Controllers/WebController.class
+org/team10/fundflow/Controllers/CampaignController.class
+com/example/transferdemo/UserRepository.class
+com/example/transferdemo/UserController.class

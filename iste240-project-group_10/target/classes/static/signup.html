@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - FundFlow</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .ui.inverted.menu .item {
+            border: none !important;
+        }
+
+        .ui.inverted.menu {
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        .main-content {
+            padding-top: 7em;
+            flex: 1;
+        }
+
+        .signup-container {
+            max-width: 500px;
+            margin: 8em auto;
+            background: #fff;
+            padding: 3em;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+        }
+
+        .signup-header {
+            text-align: center;
+            margin-bottom: 2em;
+        }
+
+        .ui.form .field label {
+            font-weight: 600;
+        }
+
+        .ui.inverted.vertical.footer.segment {
+            margin: 0 !important;
+            padding: 4em 0em !important;
+            background-color: #1b1c1d !important;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding-top: 9em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding-top: 11em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<div class="ui inverted stackable fixed menu">
+    <a href="/" class="header item" style="font-size: x-large">FundFlow</a>
+    <div class="ui container">
+        <a href="/" class="header item">Home</a>
+        <a href="/campaigns" class="header item">Explore Campaigns</a>
+        <a href="/create" class="header item">Create Campaign</a>
+        <a href="/sponsors" class="header item">Partners & Sponsors</a>
+        <a href="/about" class="header item">About Us</a>
+        <div class="right menu" id="userSection">
+            <a href="/login" class="item">Login</a>
+            <a href="/signup" class="ui primary button" style="margin-left: 0.5em;">Sign Up</a>
+        </div>
+    </div>
+</div>
+
+<div class="ui container signup-container">
+    <h2 class="ui header signup-header">Create a FundFlow Account</h2>
+
+    <form class="ui form" id="signupForm">
+        <div class="field">
+            <label>Full Name</label>
+            <input type="text" id="name" placeholder="Enter your full name" required>
+        </div>
+
+        <div class="field">
+            <label>Username</label>
+            <input type="text" id="username" placeholder="Choose a username" required>
+        </div>
+
+        <div class="field">
+            <label>Password</label>
+            <input type="password" id="password" placeholder="Choose a password" required>
+        </div>
+
+        <div class="field">
+            <label>Initial Balance</label>
+            <input type="number" id="balance" placeholder="Enter initial balance" min="0" required>
+        </div>
+
+        <button class="ui primary fluid button" type="submit">Sign Up</button>
+
+        <div class="ui divider"></div>
+
+        <div class="ui center aligned container">
+            <p>Already have an account? <a href="login.html">Log In here</a></p>
+        </div>
+    </form>
+</div>
+
+<!-- Footer -->
+<div class="ui inverted vertical footer segment">
+    <div class="ui container">
+        <div class="ui stackable inverted divided grid">
+            <div class="four wide column">
+                <h4 class="ui inverted header">About</h4>
+                <div class="ui inverted link list">
+                    <a href="/about" class="item">About Us</a>
+                    <a href="/about#contact" class="item">Contact Us</a>
+                </div>
+            </div>
+            <div class="four wide column">
+                <h4 class="ui inverted header">Services</h4>
+                <div class="ui inverted link list">
+                    <a href="/campaigns" class="item">Explore Campaigns</a>
+                    <a href="/create" class="item">Start a Campaign</a>
+                </div>
+            </div>
+            <div class="eight wide column">
+                <h4 class="ui inverted header">FundFlow</h4>
+                <p>Connecting donors with charities and individuals in need through transparent fundraising campaigns.</p>
+            </div>
+        </div>
+        <div class="ui inverted section divider"></div>
+        <div class="ui horizontal inverted small divided link list center aligned">
+            <span class="item">© 2025 FundFlow All Rights Reserved</span>
+        </div>
+    </div>
+</div>
+
+<script>
+        $(document).ready(function() {
+        $('#signupForm').submit(function (event) {
+            event.preventDefault();
+
+            const name = $('#name').val();
+            const username = $('#username').val();
+            const password = $('#password').val();
+            const balance = parseFloat($('#balance').val());
+
+            const newUser = {
+                name: name,
+                username: username,
+                password: password,
+                balance: balance
+            };
+
+            $.ajax({
+                url: '/api/users',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(newUser),
+                success: function (response) {
+                    alert('Account created successfully!');
+                    window.location.href = '/login';
+                },
+                error: function () {
+                    alert('Error creating account. Please try again.');
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

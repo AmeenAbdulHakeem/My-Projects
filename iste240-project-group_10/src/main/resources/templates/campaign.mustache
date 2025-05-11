@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campaign Details - FundFlow</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ui.inverted.menu .item {
+            border: none !important;
+        }
+
+        .ui.inverted.menu {
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        .main-content {
+            padding-top: 7em;
+            flex: 1;
+        }
+
+        .ui.container {
+            flex: 1 0 auto;
+        }
+
+        .ui.inverted.vertical.footer.segment {
+            margin-top: auto !important;
+            flex-shrink: 0;
+            margin: 0 !important;
+            padding: 4em 0em !important;
+            background-color: #1b1c1d !important;
+        }
+
+        .campaign-card {
+            margin-bottom: 2em !important;
+        }
+
+        .campaign-meta {
+            margin-bottom: 1em;
+        }
+
+        .campaign-progress {
+            margin: 1em 0;
+        }
+
+        .ui.progress {
+            margin: 1em 0 0.5em 0;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding-top: 9em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding-top: 11em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<div class="ui inverted stackable fixed menu">
+    <a href="/" class="header item" style="font-size: x-large">FundFlow</a>
+    <div class="ui container">
+        <a href="/" class="header item">Home</a>
+        <a href="/campaigns" class="header item">Explore Campaigns</a>
+        <a href="/create" class="header item">Create Campaign</a>
+        <a href="/sponsors" class="header item">Partners & Sponsors</a>
+        <a href="/about" class="header item">About Us</a>
+        <div class="right menu" id="userSection">
+            <a href="/login" class="item">Login</a>
+            <a href="/signup" class="ui primary button" style="margin-left: 0.5em;">Sign Up</a>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="ui container" style="margin-top: 7em;">
+    <div id="campaign-details" class="ui segment loading">
+        <!-- Campaign details will be loaded here via AJAX -->
+    </div>
+</div>
+
+<div class="ui tiny modal" id="balanceModal">
+    <div class="header">
+        Insufficient Balance
+    </div>
+    <div class="content">
+        <p>Your current balance is not enough for this donation.</p>
+        <div class="ui info message">
+            <div class="header">Your Balance</div>
+            <p>Current Balance: $<span id="currentBalanceDisplay">0.00</span></p>
+            <p>Required: $<span id="requiredAmountDisplay">0.00</span></p>
+        </div>
+        <p>Please top up your balance on your account page or reduce your donation amount.</p>
+    </div>
+    <div class="actions">
+        <div class="ui cancel button">Close</div>
+        <a href="/login" class="ui primary button">Go to Account</a>
+    </div>
+</div>
+
+<div class="ui tiny modal" id="loginRequiredModal">
+    <div class="header">
+        Login Required
+    </div>
+    <div class="content">
+        <p>You need to be logged in to make a donation.</p>
+    </div>
+    <div class="actions">
+        <div class="ui cancel button">Cancel</div>
+        <a href="/login" class="ui primary button">Log In</a>
+    </div>
+</div>
+
+<!-- Footer -->
+<div class="ui inverted vertical footer segment">
+    <div class="ui container">
+        <div class="ui stackable inverted divided grid">
+            <div class="four wide column">
+                <h4 class="ui inverted header">About</h4>
+                <div class="ui inverted link list">
+                    <a href="/about" class="item">About Us</a>
+                    <a href="/about#contact" class="item">Contact Us</a>
+                </div>
+            </div>
+            <div class="four wide column">
+                <h4 class="ui inverted header">Services</h4>
+                <div class="ui inverted link list">
+                    <a href="/campaigns" class="item">Explore Campaigns</a>
+                    <a href="/create" class="item">Start a Campaign</a>
+                </div>
+            </div>
+            <div class="eight wide column">
+                <h4 class="ui inverted header">FundFlow</h4>
+                <p>Connecting donors with charities and individuals in need through transparent fundraising campaigns.</p>
+            </div>
+        </div>
+        <div class="ui inverted section divider"></div>
+        <div class="ui horizontal inverted small divided link list center aligned">
+            <span class="item">© 2025 FundFlow All Rights Reserved</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const campaignId = urlParams.get('id');
+        let currentUser = null;
+
+        function checkLoginStatus() {
+            const userData = localStorage.getItem('currentUser');
+
+            if (userData) {
+                const user = JSON.parse(userData);
+                currentUser = user;
+
+                $('#userSection').html(`
+                    <a href="/mycampaigns" class="item">My Campaigns</a>
+                    <a href="/login" class="item">Hi, ${user.name}!</a>
+                    <a class="ui red button item" id="logoutButton" style="margin-left: 0.5em;">Logout</a>
+                `);
+
+                $('#logoutButton').on('click', function() {
+                    localStorage.removeItem('currentUser');
+                    window.location.href = '/';
+                });
+
+                return user; // Return user data for additional page-specific customization
+            } else {
+                // User is not logged in, ensure default UI
+                $('#userSection').html(`
+                    <a href="/login" class="item">Login</a>
+                    <a href="/signup" class="ui primary button" style="margin-left: 0.5em;">Sign Up</a>
+                `);
+
+                return null;
+            }
+        }
+
+        const user = checkLoginStatus();
+
+        if (campaignId) {
+            $.ajax({
+                url: `/api/campaign/${campaignId}`,
+                method: 'GET',
+                success: function(campaign) {
+                    // Format dates
+                    const startDate = new Date(campaign.startDate);
+                    const endDate = campaign.endDate ? new Date(campaign.endDate) : null;
+
+                    const formattedStartDate = startDate.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+
+                    const formattedEndDate = endDate ? endDate.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    }) : 'Not specified';
+
+                    const percentFunded = Math.min(100, Math.round((campaign.amountRaised / campaign.goal) * 100)) || 0;
+
+                    const today = new Date();
+                    const daysRemaining = endDate ? Math.max(0, Math.ceil((endDate - today) / (1000 * 60 * 60 * 24))) : 0;
+
+                    const sponsorHtml = campaign.sponsor ?
+                            `<div class="ui teal ribbon label">
+                            <i class="handshake outline icon"></i> Sponsored by ${campaign.sponsor}
+                        </div>` : '';
+
+                    $('#campaign-details').removeClass('loading').html(`
+                        ${sponsorHtml}
+                        <h1 class="ui header">${campaign.title}</h1>
+                        <div class="ui divider"></div>
+
+                        <div class="ui stackable two column grid">
+                            <div class="ten wide column">
+                                <div class="campaign-meta">
+                                    <span class="ui label">
+                                        <i class="folder icon"></i> ${campaign.category}
+                                    </span>
+                                    <span class="ui label">
+                                        <i class="calendar icon"></i> Created: ${formattedStartDate}
+                                    </span>
+                                    <span class="ui label">
+                                        <i class="clock icon"></i> ${daysRemaining} days remaining
+                                    </span>
+                                </div>
+
+                                <h3 class="ui header">About this Campaign</h3>
+                                <p class="campaign-description">${campaign.description}</p>
+
+                                <div class="ui segments campaign-info-grid">
+                                    <div class="ui segment">
+                                        <h4 class="ui header">Campaign Details</h4>
+                                    </div>
+                                    <div class="ui secondary segment">
+                                        <div class="ui list">
+                                            <div class="item">
+                                                <i class="user icon"></i>
+                                                <div class="content">
+                                                    <div class="header">Created by</div>
+                                                    <div class="description">${campaign.name}</div>
+                                                </div>
+                                            </div>
+                                            <div class="item">
+                                                <i class="calendar icon"></i>
+                                                <div class="content">
+                                                    <div class="header">Start Date</div>
+                                                    <div class="description">${formattedStartDate}</div>
+                                                </div>
+                                            </div>
+                                            <div class="item">
+                                                <i class="calendar check icon"></i>
+                                                <div class="content">
+                                                    <div class="header">End Date</div>
+                                                    <div class="description">${formattedEndDate}</div>
+                                                </div>
+                                            </div>
+                                            <div class="item">
+                                                <i class="tag icon"></i>
+                                                <div class="content">
+                                                    <div class="header">Category</div>
+                                                    <div class="description">${campaign.category}</div>
+                                                </div>
+                                            </div>
+                                            ${campaign.sponsor ?
+                            `<div class="item">
+                                                    <i class="handshake icon"></i>
+                                                    <div class="content">
+                                                        <div class="header">Sponsor</div>
+                                                        <div class="description">${campaign.sponsor}</div>
+                                                    </div>
+                                                </div>` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="six wide column">
+                                <div class="donation-section">
+                                    <h3 class="ui header">Funding Progress</h3>
+                                    <div class="ui statistic">
+                                        <div class="value">$${campaign.amountRaised.toLocaleString()}</div>
+                                        <div class="label">raised of $${campaign.goal.toLocaleString()} goal</div>
+                                    </div>
+
+                                    <div class="ui indicating progress" data-percent="${percentFunded}">
+                                        <div class="bar" style="width: ${percentFunded}%;">
+                                            <div class="progress">${percentFunded}%</div>
+                                        </div>
+                                        <div class="label">${percentFunded}% Funded</div>
+                                    </div>
+
+                                    <div class="ui tiny statistic">
+                                        <div class="value">${daysRemaining}</div>
+                                        <div class="label">Days to Go</div>
+                                    </div>
+
+                                    <button id="donate-button" class="ui fluid large primary button" style="margin-top: 2em;">
+                                        <i class="heart icon"></i> Donate Now
+                                    </button>
+
+                                    <form id="donation-form" class="ui form" style="margin-top: 2em; display: none;">
+                                        <div class="field">
+                                            <label>Donation Amount ($)</label>
+                                            <input type="number" id="donation-amount" placeholder="Enter amount to donate" min="1" step="0.01" required>
+                                        </div>
+                                        <input type="hidden" id="campaign-id" value="${campaign.id}">
+                                        <input type="hidden" id="campaign-username" value="${campaign.username}">
+                                        <button class="ui green fluid button" type="submit">Confirm Donation</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    `);
+
+                    $('.ui.progress').progress();
+
+                    $('#donate-button').click(function() {
+                        if (currentUser) {
+                            $('#donation-form').slideDown();
+                        } else {
+                            $('#loginRequiredModal').modal('show');
+                        }
+                    });
+
+                    $('#donation-form').submit(function(e) {
+                        e.preventDefault();
+
+                        if (!currentUser) {
+                            $('#loginRequiredModal').modal('show');
+                            return;
+                        }
+
+                        const donationAmount = parseFloat($('#donation-amount').val());
+                        const campaignId = $('#campaign-id').val();
+                        const campaignUsername = $('#campaign-username').val();
+
+                        if (isNaN(donationAmount) || donationAmount <= 0) {
+                            alert('Please enter a valid donation amount.');
+                            return;
+                        }
+
+                        if (currentUser.balance < donationAmount) {
+                            $('#currentBalanceDisplay').text(currentUser.balance.toFixed(2));
+                            $('#requiredAmountDisplay').text(donationAmount.toFixed(2));
+                            $('#balanceModal').modal('show');
+                            return;
+                        }
+
+                        $.ajax({
+                            url: `/api/users/transfer?senderUsername=${currentUser.username}&receiverUsername=${campaignUsername}&amount=${donationAmount}`,
+                            method: 'PUT',
+                            success: function() {
+                                $.ajax({
+                                    url: `/api/campaign/${campaignId}`,
+                                    method: 'GET',
+                                    success: function(campaign) {
+                                        const updatedCampaign = {
+                                            ...campaign,
+                                            amountRaised: campaign.amountRaised + donationAmount
+                                        };
+
+                                        $.ajax({
+                                            url: `/api/campaign/${campaignId}`,
+                                            method: 'PUT',
+                                            contentType: 'application/json',
+                                            data: JSON.stringify(updatedCampaign),
+                                            success: function() {
+                                                currentUser.balance -= donationAmount;
+                                                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+                                                alert('Thank you for your donation!');
+                                                location.reload();
+                                            },
+                                            error: function() {
+                                                alert('Error updating campaign. Please contact support.');
+                                            }
+                                        });
+                                    },
+                                    error: function() {
+                                        alert('Error retrieving campaign details. Please try again.');
+                                    }
+                                });
+                            },
+                            error: function(xhr) {
+                                if (xhr.status === 400) {
+                                    alert('Insufficient balance for this donation.');
+                                } else {
+                                    alert('Error processing donation. Please try again.');
+                                }
+                            }
+                        });
+                    });
+                },
+                error: function() {
+                    $('#campaign-details').removeClass('loading').html(`
+                        <div class="ui negative message">
+                            <div class="header">Campaign Not Found</div>
+                            <p>We couldn't find the campaign you're looking for. It may have been removed or the ID is incorrect.</p>
+                        </div>
+                    `);
+                }
+            });
+        } else {
+            $('#campaign-details').removeClass('loading').html(`
+                <div class="ui warning message">
+                    <div class="header">Campaign ID Missing</div>
+                    <p>No campaign ID was specified in the URL. Please select a campaign from the campaigns page.</p>
+                    <a href="/campaigns" class="ui button">Browse Campaigns</a>
+                </div>
+            `);
+        }
+    });
+</script>
+
+</body>
+</html>

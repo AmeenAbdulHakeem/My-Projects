@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Campaign - FundFlow</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Remove borders between nav items */
+        .ui.inverted.menu .item {
+            border: none !important;
+        }
+
+        .ui.inverted.menu {
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        .main-content {
+            flex: 1;
+            padding-top: 7em;
+        }
+
+        .ui.inverted.vertical.footer.segment {
+            margin: 0 !important;
+            padding: 4em 0em !important;
+            background-color: #1b1c1d !important;
+        }
+
+        .ui.segment h4.ui.dividing.header {
+            margin-top: 2em;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding-top: 9em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding-top: 11em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<div class="ui inverted stackable fixed menu">
+    <a href="/" class="header item" style="font-size: x-large">FundFlow</a>
+    <div class="ui container">
+        <a href="/" class="header item">Home</a>
+        <a href="/campaigns" class="header item">Explore Campaigns</a>
+        <a href="/create" class="header item">Create Campaign</a>
+        <a href="/sponsors" class="header item">Partners & Sponsors</a>
+        <a href="/about" class="header item">About Us</a>
+        <div class="right menu" id="userSection">
+            <a href="/login" class="item">Login</a>
+            <a href="/signup" class="ui primary button" style="margin-left: 0.5em;">Sign Up</a>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+
+    <div class="ui container">
+        <h1 class="ui header">Create a New Campaign</h1>
+        <div class="ui divider"></div>
+
+        <div class="ui raised very padded text container segment">
+            <form class="ui form" id="campaignForm">
+                <h4 class="ui dividing header">Campaign Information</h4>
+
+                <div class="field">
+                    <label>Campaign Title</label>
+                    <input type="text" name="title" placeholder="Enter a compelling title" required>
+                </div>
+
+                <div class="field">
+                    <label>Your Name</label>
+                    <input type="text" name="name" id="creatorName" placeholder="Enter your name" required>
+                </div>
+
+                <!-- Hidden field for username -->
+                <input type="hidden" id="username" name="username" value="null">
+
+                <div class="field">
+                    <label>Category</label>
+                    <select class="ui dropdown" name="category" required>
+                        <option value="">Select Category</option>
+                        <option value="Healthcare">Healthcare</option>
+                        <option value="Education">Education</option>
+                        <option value="Environment">Environment</option>
+                        <option value="Disaster Relief">Disaster Relief</option>
+                        <option value="Animal Welfare">Animal Welfare</option>
+                        <option value="Arts & Culture">Arts & Culture</option>
+                        <option value="Community Development">Community Development</option>
+                        <option value="Children & Youth">Children & Youth</option>
+                        <option value="Human Rights">Human Rights</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label>Target Amount ($)</label>
+                    <input type="number" name="targetAmount" placeholder="Enter target amount" required>
+                </div>
+
+                <div class="field">
+                    <div class="ui checkbox">
+                        <input type="checkbox" name="sponsorCheck" id="sponsorCheckbox">
+                        <label>Sponsored Campaign?</label>
+                    </div>
+                </div>
+
+                <div class="field" id="sponsorField" style="display: none;">
+                    <label>Sponsor</label>
+                    <input type="text" id="sponsor" name="sponsor" placeholder="Enter the sponsor of this campaign">
+                </div>
+
+                <div class="field">
+                    <label>End Date</label>
+                    <input type="date" id="endDate" name="endDate" required>
+                </div>
+
+                <div class="field">
+                    <label>Campaign Description</label>
+                    <textarea name="description" rows="4" placeholder="Describe your campaign..." required></textarea>
+                </div>
+
+                <div class="field">
+                    <div class="ui checkbox">
+                        <input type="checkbox" required name="terms">
+                        <label>I agree to the Terms and Conditions</label>
+                    </div>
+                </div>
+
+                <button class="ui primary button" type="submit">Create Campaign</button>
+                <button class="ui button" type="reset">Clear Form</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<!-- Footer -->
+<div class="ui inverted vertical footer segment">
+    <div class="ui container">
+        <div class="ui stackable inverted divided grid">
+            <div class="four wide column">
+                <h4 class="ui inverted header">About</h4>
+                <div class="ui inverted link list">
+                    <a href="/about" class="item">About Us</a>
+                    <a href="/about#contact" class="item">Contact Us</a>
+                </div>
+            </div>
+            <div class="four wide column">
+                <h4 class="ui inverted header">Services</h4>
+                <div class="ui inverted link list">
+                    <a href="/campaigns" class="item">Explore Campaigns</a>
+                    <a href="/create" class="item">Start a Campaign</a>
+                </div>
+            </div>
+            <div class="eight wide column">
+                <h4 class="ui inverted header">FundFlow</h4>
+                <p>Connecting donors with charities and individuals in need through transparent fundraising campaigns.</p>
+            </div>
+        </div>
+        <div class="ui inverted section divider"></div>
+        <div class="ui horizontal inverted small divided link list center aligned">
+            <span class="item">© 2025 FundFlow All Rights Reserved</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        var campaignAPI = "api/campaign";
+
+            function checkLoginStatus() {
+                const userData = localStorage.getItem('currentUser');
+
+                if (userData) {
+                    const user = JSON.parse(userData);
+
+                    $('#userSection').html(`
+                        <a href="/mycampaigns" class="item">My Campaigns</a>
+                        <a href="/login" class="item username-link">Hi, ${user.name}!</a>
+                        <a class="ui red button item" id="logoutButton" style="margin-left: 0.5em;">Logout</a>
+                    `);
+
+                    $('#logoutButton').on('click', function() {
+                        localStorage.removeItem('currentUser');
+                        window.location.href = '/';
+                    });
+
+                    return user;
+                } else {
+                    $('#userSection').html(`
+                    <a href="/login" class="item">Login</a>
+                    <a href="/signup" class="ui primary button" style="margin-left: 0.5em;">Sign Up</a>
+                `);
+
+                    return null;
+                }
+            }
+
+            const user = checkLoginStatus();
+
+        if (user) {
+            $('#creatorName').val(user.name);
+            // Set the username in the hidden field
+            $('#username').val(user.username);
+        }
+
+        $('.ui.dropdown').dropdown();
+        $('.ui.checkbox').checkbox();
+
+        $('#sponsorCheckbox').on('change', function() {
+            if($(this).is(':checked')) {
+                $('#sponsorField').show();
+                $('#sponsor').prop('required', true);
+            } else {
+                $('#sponsorField').hide();
+                $('#sponsor').prop('required', false);
+            }
+        });
+
+        $('.ui.form').form({
+            fields: {
+                title: 'empty',
+                name: 'empty',
+                category: 'empty',
+                targetAmount: 'empty',
+                endDate: 'empty',
+                description: 'empty'
+            }
+        });
+
+        $('#campaignForm').on('submit', function(e) {
+            e.preventDefault();
+
+            const title = $('input[name="title"]').val();
+            const name = $('#creatorName').val();
+            const username = user ? user.username : null;
+            const category = $('select[name="category"]').val();
+            const goal = parseFloat($('input[name="targetAmount"]').val());
+            const description = $('textarea[name="description"]').val();
+            const sponsor = $('#sponsorCheckbox').is(':checked') ? $('#sponsor').val() : null;
+            const endDateInput = $('#endDate').val();
+
+            const campaignData = {
+                title: title,
+                amountRaised: 0,
+                goal: goal,
+                name: name,
+                description: description,
+                category: category,
+                sponsor: sponsor,
+                endDate: endDateInput,
+                username: username
+            };
+
+            $.ajax({
+                url: campaignAPI,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(campaignData),
+                success: function(response) {
+                    alert('Campaign created successfully!');
+                    window.location.href = '/campaigns'; // Redirect to campaigns page
+                },
+                error: function() {
+                    alert('Error creating campaign. Please check your inputs and try again.');
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

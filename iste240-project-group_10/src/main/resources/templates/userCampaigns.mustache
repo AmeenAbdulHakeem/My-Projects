@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Campaigns - FundFlow</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+    <style>
+        .campaign-card {
+            margin-bottom: 2em !important;
+        }
+        .campaign-actions {
+            text-align: right;
+        }
+        .ui.progress {
+            margin: 1em 0 0.5em 0;
+        }
+        .empty-state {
+            padding: 4em;
+            text-align: center;
+        }
+        .ui.dropdown .menu {
+            z-index: 1000;
+        }
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+        .main-content {
+            flex: 1 0 auto;
+            padding-bottom: 3em;
+        }
+        .footer {
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+<!-- Navigation Bar -->
+<div class="ui inverted stackable fixed menu">
+    <a href="/" class="header item" style="font-size: x-large">FundFlow</a>
+    <div class="ui container">
+        <a href="/" class="header item">Home</a>
+        <a href="/campaigns" class="header item">Explore Campaigns</a>
+        <a href="/create" class="header item">Create Campaign</a>
+        <a href="/sponsors" class="header item">Partners & Sponsors</a>
+        <a href="/about" class="header item">About Us</a>
+        <div class="right menu" id="userSection">
+            <a href="/mycampaigns" class="active item">My Campaigns</a>
+            <a href="/login" class="item" id="userGreeting">Hi, {{username}}!</a>
+            <a class="ui red button item" id="logoutButton" style="margin-left: 0.5em;">Logout</a>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content ui container" style="margin-top: 6em;">
+    <h1 class="ui header">My Campaigns</h1>
+    <div class="ui divider"></div>
+
+    <a href="/create" class="ui primary button">
+        <i class="plus icon"></i>
+        Create New Campaign
+    </a>
+
+    <div class="ui segment clearfix" style="margin-top: 2em;" id="campaignsContainer">
+        {{#campaigns.isEmpty}}
+            <div class="empty-state">
+                <i class="huge folder open outline icon"></i>
+                <h2>No Campaigns Yet</h2>
+                <p>You haven't created any campaigns yet. Start by creating your first campaign!</p>
+                <a href="/create" class="ui primary button">Create Campaign</a>
+            </div>
+        {{/campaigns.isEmpty}}
+
+        {{^campaigns.isEmpty}}
+            <div class="ui stackable cards" id="campaignCards">
+                {{#campaigns}}
+                    <div class="ui fluid card campaign-card" data-id="{{id}}">
+                        <div class="content">
+                            <div class="right floated">
+                                <div class="ui dropdown">
+                                    <i class="ellipsis vertical icon"></i>
+                                    <div class="menu">
+                                        <div class="item edit-campaign">
+                                            <i class="edit icon"></i>
+                                            Edit
+                                        </div>
+                                        <div class="item delete-campaign">
+                                            <i class="trash icon"></i>
+                                            Delete
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="header">{{title}}</div>
+                            <div class="meta">
+                                    <span class="category">
+                                        {{#equals}}{{category}}{{#equals}}Healthcare{{/equals}}
+                                            <i class="hospital icon"></i>
+                                        {{/equals}}
+                                        {{#equals}}{{category}}{{#equals}}Education{{/equals}}
+                                            <i class="book icon"></i>
+                                        {{/equals}}
+                                        {{#equals}}{{category}}{{#equals}}Environment{{/equals}}
+                                            <i class="leaf icon"></i>
+                                        {{/equals}}
+                                        {{#equals}}{{category}}{{#equals}}Disaster Relief{{/equals}}
+                                            <i class="life ring icon"></i>
+                                        {{/equals}}
+                                        {{#equals}}{{category}}{{#equals}}Animal Welfare{{/equals}}
+                                            <i class="paw icon"></i>
+                                        {{/equals}}
+                                        {{#equals}}{{category}}{{#equals}}Arts & Culture{{/equals}}
+                                            <i class="paint brush icon"></i>
+                                        {{/equals}}
+                                        {{#equals}}{{category}}{{#equals}}Community Development{{/equals}}
+                                            <i class="users icon"></i>
+                                        {{/equals}}
+                                        {{#equals}}{{category}}{{#equals}}Children & Youth{{/equals}}
+                                            <i class="child icon"></i>
+                                        {{/equals}}
+                                        {{#equals}}{{category}}{{#equals}}Human Rights{{/equals}}
+                                            <i class="balance scale icon"></i>
+                                        {{/equals}}
+                                        {{category}}
+                                    </span>
+                            </div>
+                            <div class="description">
+                                <p>{{description}}</p>
+                            </div>
+                            <div class="ui statistics mini">
+                                <div class="statistic">
+                                    <div class="value">${{amountRaised}}</div>
+                                    <div class="label">Raised</div>
+                                </div>
+                                <div class="statistic">
+                                    <div class="value">${{goal}}</div>
+                                    <div class="label">Goal</div>
+                                </div>
+                                {{#endDate}}
+                                    <div class="statistic">
+                                        <div class="value">{{endDate}}</div>
+                                        <div class="label">End Date</div>
+                                    </div>
+                                {{/endDate}}
+                            </div>
+                            <div class="ui indicating progress" data-percent="{{progressPercentage}}">
+                                <div class="bar" style="width: {{progressPercentage}}%;">
+                                    <div class="progress">{{progressPercentage}}%</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="extra content">
+                            <a href="/campaign?id={{id}}" class="ui button">View Campaign</a>
+                        </div>
+                    </div>
+                {{/campaigns}}
+            </div>
+        {{/campaigns.isEmpty}}
+    </div>
+</div>
+
+<div class="ui modal" id="editCampaignModal">
+    <i class="close icon"></i>
+    <div class="header">Edit Campaign</div>
+    <div class="content">
+        <form class="ui form" id="editCampaignForm">
+            <input type="hidden" id="editCampaignId">
+            <div class="field">
+                <label>Campaign Title</label>
+                <input type="text" id="editTitle" required>
+            </div>
+            <div class="field">
+                <label>Description</label>
+                <textarea id="editDescription" rows="3" required></textarea>
+            </div>
+            <div class="field">
+                <label>Goal Amount ($)</label>
+                <input type="number" id="editGoal" required>
+            </div>
+            <div class="field">
+                <label>End Date</label>
+                <input type="date" id="editEndDate" required>
+            </div>
+            <div class="field">
+                <label>Sponsor (Optional)</label>
+                <input type="text" id="editSponsor">
+            </div>
+        </form>
+    </div>
+    <div class="actions">
+        <div class="ui black deny button">Cancel</div>
+        <div class="ui positive button" id="saveEditButton">Save</div>
+    </div>
+</div>
+
+<div class="ui basic modal" id="confirmDelete">
+    <div class="ui icon header">
+        <i class="trash icon"></i>
+        Delete Campaign
+    </div>
+    <div class="content">
+        <p>Are you sure you want to delete this campaign? This action cannot be undone.</p>
+    </div>
+    <div class="actions">
+        <div class="ui red basic cancel inverted button">
+            <i class="remove icon"></i>
+            No
+        </div>
+        <div class="ui green ok inverted button" id="confirmDeleteButton">
+            <i class="checkmark icon"></i>
+            Yes
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<div class="ui inverted vertical footer segment">
+    <div class="ui container">
+        <div class="ui stackable inverted divided grid">
+            <div class="four wide column">
+                <h4 class="ui inverted header">About</h4>
+                <div class="ui inverted link list">
+                    <a href="/about" class="item">About Us</a>
+                    <a href="/about#contact" class="item">Contact Us</a>
+                </div>
+            </div>
+            <div class="four wide column">
+                <h4 class="ui inverted header">Services</h4>
+                <div class="ui inverted link list">
+                    <a href="/campaigns" class="item">Explore Campaigns</a>
+                    <a href="/create" class="item">Start a Campaign</a>
+                </div>
+            </div>
+            <div class="eight wide column">
+                <h4 class="ui inverted header">FundFlow</h4>
+                <p>Connecting donors with charities and individuals in need through transparent fundraising campaigns.</p>
+            </div>
+        </div>
+        <div class="ui inverted section divider"></div>
+        <div class="ui horizontal inverted small divided link list center aligned">
+            <span class="item">© 2025 FundFlow All Rights Reserved</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+
+        const userData = localStorage.getItem('currentUser');
+        let currentUser = null;
+
+        if (userData) {
+            currentUser = JSON.parse(userData);
+
+            if ($('#userGreeting').text().includes('ANON') || $('#userGreeting').text().trim() === 'Hi, !') {
+                $('#userGreeting').text(`Hi, ${currentUser.name}!`);
+            }
+
+            $('#campaignsContainer').empty();
+            $('#campaignsContainer').html('<div class="ui active centered inline loader"></div>');
+
+            fetchUserCampaigns(currentUser.username);
+        } else {
+            window.location.href = '/login';
+            return;
+        }
+
+        function fetchUserCampaigns(username) {
+
+            $.ajax({
+                url: '/api/campaign',
+                type: 'GET',
+                success: function(allCampaigns) {
+
+                    const userCampaigns = allCampaigns.filter(campaign => {
+                        return campaign.username === username;
+                    });
+;
+
+                    if (userCampaigns.length === 0) {
+                        $('#campaignsContainer').html(`
+                            <div class="empty-state">
+                                <i class="huge folder open outline icon"></i>
+                                <h2>No Campaigns Yet</h2>
+                                <p>You haven't created any campaigns yet. Start by creating your first campaign!</p>
+                                <a href="/create" class="ui primary button">Create Campaign</a>
+                            </div>
+                        `);
+                        console.log("No campaigns found for this user, showing empty state");
+                    } else {
+                        let campaignCardsHTML = '<div class="ui stackable cards">';
+
+                        userCampaigns.forEach(campaign => {
+                            const progressPercentage = Math.min(100, Math.round((campaign.amountRaised / campaign.goal) * 100)) || 0;
+
+                            let endDateDisplay = campaign.endDate ?
+                                    new Date(campaign.endDate).toLocaleDateString() : '';
+
+                            let categoryIcon = getCategoryIcon(campaign.category);
+
+                            campaignCardsHTML += `
+                                <div class="ui fluid card campaign-card" data-id="${campaign.id}">
+                                    <div class="content">
+                                        <div class="right floated">
+                                            <div class="ui dropdown">
+                                                <i class="ellipsis vertical icon"></i>
+                                                <div class="menu">
+                                                    <div class="item edit-campaign">
+                                                        <i class="edit icon"></i>
+                                                        Edit
+                                                    </div>
+                                                    <div class="item delete-campaign">
+                                                        <i class="trash icon"></i>
+                                                        Delete
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="header">${campaign.title}</div>
+                                        <div class="meta">
+                                            <span class="category">
+                                                ${categoryIcon} ${campaign.category}
+                                            </span>
+                                        </div>
+                                        <div class="description">
+                                            <p>${campaign.description}</p>
+                                        </div>
+                                        <div class="ui statistics mini">
+                                            <div class="statistic">
+                                                <div class="value">$${campaign.amountRaised.toFixed(2)}</div>
+                                                <div class="label">Raised</div>
+                                            </div>
+                                            <div class="statistic">
+                                                <div class="value">$${campaign.goal.toFixed(2)}</div>
+                                                <div class="label">Goal</div>
+                                            </div>
+                                            ${endDateDisplay ? `
+                                            <div class="statistic">
+                                                <div class="value">${endDateDisplay}</div>
+                                                <div class="label">End Date</div>
+                                            </div>` : ''}
+                                        </div>
+                                        <div class="ui indicating progress" data-percent="${progressPercentage}">
+                                            <div class="bar" style="width: ${progressPercentage}%;">
+                                                <div class="progress">${progressPercentage}%</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="extra content">
+                                        <a href="/campaign?id=${campaign.id}" class="ui button">View Campaign</a>
+                                    </div>
+                                </div>
+                            `;
+                        });
+
+                        campaignCardsHTML += '</div>';
+
+                        $('#campaignsContainer').html(campaignCardsHTML);
+
+                        initializeComponents();
+                    }
+                },
+                error: function(error) {
+                    console.error('Error loading campaigns:', error);
+                    $('#campaignsContainer').html(`
+                        <div class="ui negative message">
+                            <div class="header">Error Loading Campaigns</div>
+                            <p>There was a problem loading your campaigns. Please try again later.</p>
+                        </div>
+                    `);
+                }
+            });
+        }
+
+        function getCategoryIcon(category) {
+            switch(category) {
+                case 'Healthcare': return '<i class="hospital icon"></i>';
+                case 'Education': return '<i class="book icon"></i>';
+                case 'Environment': return '<i class="leaf icon"></i>';
+                case 'Disaster Relief': return '<i class="life ring icon"></i>';
+                case 'Animal Welfare': return '<i class="paw icon"></i>';
+                case 'Arts & Culture': return '<i class="paint brush icon"></i>';
+                case 'Community Development': return '<i class="users icon"></i>';
+                case 'Children & Youth': return '<i class="child icon"></i>';
+                case 'Human Rights': return '<i class="balance scale icon"></i>';
+                default: return '<i class="tag icon"></i>';
+            }
+        }
+
+        function initializeComponents() {
+            $('.ui.dropdown').dropdown();
+
+            $('.ui.progress').progress();
+
+            $('.edit-campaign').on('click', function() {
+                const card = $(this).closest('.campaign-card');
+                const campaignId = card.data('id');
+
+                $.ajax({
+                    url: `/api/campaign/${campaignId}`,
+                    type: 'GET',
+                    success: function(campaign) {
+                        $('#editCampaignId').val(campaign.id);
+                        $('#editTitle').val(campaign.title);
+                        $('#editDescription').val(campaign.description);
+                        $('#editGoal').val(campaign.goal);
+                        $('#editSponsor').val(campaign.sponsor || '');
+
+                        if (campaign.endDate) {
+                            const endDate = new Date(campaign.endDate);
+                            const year = endDate.getFullYear();
+                            const month = String(endDate.getMonth() + 1).padStart(2, '0');
+                            const day = String(endDate.getDate()).padStart(2, '0');
+                            $('#editEndDate').val(`${year}-${month}-${day}`);
+                        }
+
+                        $('#editCampaignModal').modal('show');
+                    },
+                    error: function() {
+                        alert('Error loading campaign data. Please try again.');
+                    }
+                });
+            });
+
+            $('.delete-campaign').on('click', function() {
+                const card = $(this).closest('.campaign-card');
+                const campaignId = card.data('id');
+
+                $('#confirmDelete').data('campaign-id', campaignId);
+
+                $('#confirmDelete').modal('show');
+            });
+        }
+
+        $('#logoutButton').on('click', function() {
+            localStorage.removeItem('currentUser');
+            window.location.href = '/';
+        });
+
+        // Replace your saveEditButton click handler with this:
+        $('#saveEditButton').on('click', function() {
+            const campaignId = $('#editCampaignId').val();
+
+            if (!$('#editTitle').val() || !$('#editDescription').val() || !$('#editGoal').val() || !$('#editEndDate').val()) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+
+            $.ajax({
+                url: `/api/campaign/${campaignId}`,
+                type: 'GET',
+                success: function(existingCampaign) {
+                    const updatedCampaign = {
+                        ...existingCampaign,
+                        title: $('#editTitle').val(),
+                        description: $('#editDescription').val(),
+                        goal: parseFloat($('#editGoal').val()),
+                        sponsor: $('#editSponsor').val() || null,
+                        endDate: $('#editEndDate').val()
+                    };
+
+                    $.ajax({
+                        url: `/api/campaign/${campaignId}`,
+                        type: 'PUT',
+                        contentType: 'application/json',
+                        data: JSON.stringify(updatedCampaign),
+                        success: function() {
+                            $('#editCampaignModal').modal('hide');
+
+                            $('#campaignsContainer').prepend(`
+                        <div class="ui success message">
+                            <i class="close icon"></i>
+                            <div class="header">Campaign Updated</div>
+                            <p>Your campaign has been successfully updated.</p>
+                        </div>
+                    `);
+                            $('.message .close').on('click', function() {
+                                $(this).closest('.message').transition('fade');
+                            });
+
+                            if (currentUser) {
+                                fetchUserCampaigns(currentUser.username);
+                            }
+                        },
+                        error: function(error) {
+                            console.error("Update error details:", error);
+                        }
+                    });
+                },
+                error: function() {
+                    alert('Error loading campaign data. Please try again.');
+                }
+            });
+        });
+
+        $('#confirmDeleteButton').on('click', function() {
+            const campaignId = $('#confirmDelete').data('campaign-id');
+
+            $(this).addClass('loading');
+
+            $.ajax({
+                url: `/api/campaign/${campaignId}`,
+                type: 'DELETE',
+                success: function(response) {
+                    $('#confirmDelete').modal('hide');
+                    $('#campaignsContainer').prepend(`
+                <div class="ui success message">
+                    <i class="close icon"></i>
+                    <div class="header">Campaign Deleted</div>
+                    <p>Your campaign has been successfully deleted.</p>
+                </div>
+            `);
+                    $('.message .close').on('click', function() {
+                        $(this).closest('.message').transition('fade');
+                    });
+
+                    if (currentUser) {
+                        fetchUserCampaigns(currentUser.username);
+                    }
+                },
+                error: function(error) {
+                    console.error("Delete error details:", error);
+                    $('#confirmDelete').modal('hide');
+                },
+                complete: function() {
+                    $('#confirmDeleteButton').removeClass('loading');
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

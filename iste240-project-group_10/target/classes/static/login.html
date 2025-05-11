@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - FundFlow</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .ui.inverted.menu .item {
+            border: none !important;
+        }
+
+        .ui.inverted.menu {
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        .main-content {
+            padding-top: 7em;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .login-container {
+            max-width: 500px;
+            margin: 8em auto;
+            background: #fff;
+            padding: 3em;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2em;
+        }
+
+        .ui.form .field label {
+            font-weight: 600;
+        }
+
+        .balance-section {
+            margin-top: 2em;
+            padding: 1.5em;
+            background-color: #f8f8f8;
+            border-radius: 5px;
+        }
+
+        .balance-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .ui.inverted.vertical.footer.segment {
+            margin: 0 !important;
+            padding: 4em 0em !important;
+            background-color: #1b1c1d !important;
+            margin-top: auto !important;
+        }
+
+        .page-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Welcome container styles */
+        #welcomeContainer {
+            margin-top: 8em;
+            margin-bottom: 2em;
+            flex: 1;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding-top: 9em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding-top: 11em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<div class="ui inverted stackable fixed menu">
+    <a href="/" class="header item" style="font-size: x-large">FundFlow</a>
+    <div class="ui container">
+        <a href="/" class="header item">Home</a>
+        <a href="/campaigns" class="header item">Explore Campaigns</a>
+        <a href="/create" class="header item">Create Campaign</a>
+        <a href="/sponsors" class="header item">Partners & Sponsors</a>
+        <a href="/about" class="header item">About Us</a>
+        <div class="right menu" id="userSection">
+            <a href="/login" class="item">Login</a>
+            <a href="/signup" class="ui primary button" style="margin-left: 0.5em;">Sign Up</a>
+        </div>
+    </div>
+</div>
+
+<div class="ui container login-container" id="loginContainer">
+    <h2 class="ui header login-header">Log In to FundFlow</h2>
+
+    <form class="ui form" id="loginForm">
+        <div class="field">
+            <label>Username</label>
+            <input type="text" id="username" placeholder="Enter your username" required>
+        </div>
+
+        <div class="field">
+            <label>Password</label>
+            <input type="password" id="password" placeholder="Enter your password" required>
+        </div>
+
+        <div class="ui error message" id="loginError" style="display: none;">
+            <div class="header">Login Failed</div>
+            <p>Invalid username or password. Please try again.</p>
+        </div>
+
+        <button class="ui primary fluid button" type="submit">Log In</button>
+
+        <div class="ui divider"></div>
+
+        <div class="ui center aligned container">
+            <p>Don't have an account? <a href="/signup">Sign Up here</a></p>
+        </div>
+    </form>
+</div>
+
+<div class="ui container" id="welcomeContainer" style="margin-top: 8em; display: none;">
+    <div class="ui segment">
+        <h2 class="ui header">Welcome back, <span id="userNameDisplay"></span>!</h2>
+        <p>You are now logged in to your FundFlow account.</p>
+        <div class="ui divider"></div>
+        <div class="ui two column stackable grid">
+            <div class="column">
+                <div class="ui segment">
+                    <h3 class="ui header">Your Balance</h3>
+                    <div class="balance-container">
+                        <div class="ui statistic">
+                            <div class="value" id="userBalanceDisplay">$0.00</div>
+                        </div>
+                        <button id="topupButton" class="ui primary button">
+                            <i class="plus icon"></i> Top Up Balance
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="ui segment">
+                    <h3 class="ui header">Quick Links</h3>
+                    <div class="ui list">
+                        <a class="item" href="/campaigns"><i class="search icon"></i> Explore Campaigns</a>
+                        <a class="item" href="/create"><i class="plus icon"></i> Create a New Campaign</a>
+                        <a class="item" href="/mycampaigns"><i class="list icon"></i> My Campaigns</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="balanceTopupSection" class="balance-section" style="display: none;">
+            <h3 class="ui header">Top Up Your Balance</h3>
+            <form class="ui form" id="topupForm">
+                <div class="field">
+                    <label>Amount to Add ($)</label>
+                    <input type="number" id="topupAmount" placeholder="Enter amount" min="1" step="0.01" required>
+                </div>
+                <div class="ui buttons">
+                    <button class="ui positive button" type="submit">Confirm Top Up</button>
+                    <div class="or"></div>
+                    <button class="ui button" type="button" id="cancelTopup">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<div class="ui inverted vertical footer segment">
+    <div class="ui container">
+        <div class="ui stackable inverted divided grid">
+            <div class="four wide column">
+                <h4 class="ui inverted header">About</h4>
+                <div class="ui inverted link list">
+                    <a href="/about" class="item">About Us</a>
+                    <a href="/about#contact" class="item">Contact Us</a>
+                </div>
+            </div>
+            <div class="four wide column">
+                <h4 class="ui inverted header">Services</h4>
+                <div class="ui inverted link list">
+                    <a href="/campaigns" class="item">Explore Campaigns</a>
+                    <a href="/create" class="item">Start a Campaign</a>
+                </div>
+            </div>
+            <div class="eight wide column">
+                <h4 class="ui inverted header">FundFlow</h4>
+                <p>Connecting donors with charities and individuals in need through transparent fundraising campaigns.</p>
+            </div>
+        </div>
+        <div class="ui inverted section divider"></div>
+        <div class="ui horizontal inverted small divided link list center aligned">
+            <span class="item">© 2025 FundFlow All Rights Reserved</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        checkLoginStatus();
+
+        $('#loginForm').on('submit', function(event) {
+            event.preventDefault();
+
+            const username = $('#username').val();
+            const password = $('#password').val();
+
+            $('#loginError').hide();
+
+            $.ajax({
+                url: `api/users/validate?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,
+                type: 'GET',
+                success: function(response) {
+                    $.ajax({
+                        url: `api/users/findByUsername?username=${encodeURIComponent(username)}`,
+                        type: 'GET',
+                        success: function(userData) {
+                            const user = {
+                                id: userData.id,
+                                name: userData.name,
+                                username: userData.username,
+                                balance: userData.balance
+                            };
+
+                            localStorage.setItem('currentUser', JSON.stringify(user));
+                            updateUIForLoggedInUser(user);
+                        },
+                        error: function() {
+                            alert("There was an error connecting to the server.");
+                        }
+                    });
+                },
+                error: function() {
+                    $('#loginError').show();
+                }
+            });
+        });
+
+        function updateUIForLoggedInUser(user) {
+            $('#userSection').html(`
+                <a href="/mycampaigns" class="item">My Campaigns</a>
+                <a href="/login" class="item username-link">Hi, ${user.name}!</a>
+                <a class="ui red button item" id="logoutButton" style="margin-left: 0.5em;">Logout</a>
+            `);
+
+            $('#logoutButton').on('click', function() {
+                localStorage.removeItem('currentUser');
+                window.location.href = '/';
+            });
+
+            $('#loginContainer').hide();
+
+            $('#userNameDisplay').text(user.name);
+
+            if (user.balance !== undefined) {
+                $('#userBalanceDisplay').text('$' + parseFloat(user.balance).toFixed(2));
+            }
+
+            $('#welcomeContainer').show();
+
+            $('.ui.dropdown').dropdown();
+        }
+
+        function checkLoginStatus() {
+            const userData = localStorage.getItem('currentUser');
+
+            if (userData) {
+                const user = JSON.parse(userData);
+                updateUIForLoggedInUser(user);
+            }
+        }
+
+        $('#topupButton').on('click', function() {
+            $('#balanceTopupSection').slideDown();
+        });
+
+        $('#cancelTopup').on('click', function() {
+            $('#balanceTopupSection').slideUp();
+            $('#topupForm')[0].reset();
+        });
+
+        $('#topupForm').on('submit', function(e) {
+            e.preventDefault();
+
+            const topupAmount = parseFloat($('#topupAmount').val());
+
+            if (isNaN(topupAmount) || topupAmount <= 0) {
+                alert('Please enter a valid amount to top up.');
+                return;
+            }
+
+            const userData = localStorage.getItem('currentUser');
+            if (!userData) {
+                alert('User session expired. Please log in again.');
+                window.location.href = '/login';
+                return;
+            }
+
+            const user = JSON.parse(userData);
+            const newBalance = user.balance + topupAmount;
+
+            $.ajax({
+                url: `api/users/${user.id}`,
+                type: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    id: user.id,
+                    name: user.name,
+                    username: user.username,
+                    balance: newBalance
+                }),
+                success: function(response) {
+                    user.balance = newBalance;
+                    localStorage.setItem('currentUser', JSON.stringify(user));
+
+                    $('#userBalanceDisplay').text('$' + newBalance.toFixed(2));
+
+                    $('#topupForm')[0].reset();
+                    $('#balanceTopupSection').slideUp();
+
+                    alert(`Your account has been topped up with $${topupAmount.toFixed(2)}`);
+                },
+                error: function() {
+                    alert('Error updating your balance. Please try again later.');
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partners & Sponsors - FundFlow</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<div class="ui inverted stackable fixed menu">
+    <a href="/" class="header item" style="font-size: x-large">FundFlow</a>
+    <div class="ui container">
+        <a href="/" class="header item">Home</a>
+        <a href="/campaigns" class="header item">Explore Campaigns</a>
+        <a href="/create" class="header item">Create Campaign</a>
+        <a href="/sponsors" class="header item">Partners & Sponsors</a>
+        <a href="/about" class="header item">About Us</a>
+        <div class="right menu" id="userSection">
+            <a href="/login" class="item">Login</a>
+            <a href="/signup" class="ui primary button" style="margin-left: 0.5em;">Sign Up</a>
+        </div>
+    </div>
+</div>
+
+<div class="ui container" style="margin-top: 6em;">
+    <h1 class="ui header">Our Partners & Sponsors</h1>
+    <div class="ui divider"></div>
+
+    <div class="ui segment">
+        <p>FundFlow is proud to partner with organizations that share our commitment to transparency and effective fundraising. These partners help us expand our reach and maximize our impact in communities around the world.</p>
+    </div>
+
+    <h2 class="ui header">Premium Partners</h2>
+    <div class="ui four column stackable grid">
+        <div class="column">
+            <div class="ui fluid card">
+                <div class="content">
+                    <div class="header">Global Health Initiative</div>
+                    <div class="description">Supporting healthcare projects worldwide.</div>
+                </div>
+            </div>
+        </div>
+        <div class="column">
+            <div class="ui fluid card">
+                <div class="content">
+                    <div class="header">EdTech Foundation</div>
+                    <div class="description">Advancing education through technology.</div>
+                </div>
+            </div>
+        </div>
+        <div class="column">
+            <div class="ui fluid card">
+                <div class="content">
+                    <div class="header">EcoCare Trust</div>
+                    <div class="description">Environmental conservation initiatives.</div>
+                </div>
+            </div>
+        </div>
+        <div class="column">
+            <div class="ui fluid card">
+                <div class="content">
+                    <div class="header">TechForGood Inc.</div>
+                    <div class="description">Using technology to solve social challenges.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="ui header">Supporting Partners</h2>
+    <div class="ui segment">
+        <div class="ui middle aligned divided list">
+            <div class="item">
+                <div class="content">
+                    <div class="header">Innovative Finance Group</div>
+                    <div class="description">Financial solutions for nonprofits</div>
+                </div>
+            </div>
+            <div class="item">
+                <div class="content">
+                    <div class="header">Community Development Alliance</div>
+                    <div class="description">Building stronger communities</div>
+                </div>
+            </div>
+            <div class="item">
+                <div class="content">
+                    <div class="header">Youth Empowerment Network</div>
+                    <div class="description">Creating opportunities for young people</div>
+                </div>
+            </div>
+            <div class="item">
+                <div class="content">
+                    <div class="header">Arts & Culture Foundation</div>
+                    <div class="description">Promoting creative expression</div>
+                </div>
+            </div>
+            <div class="item">
+                <div class="content">
+                    <div class="header">Digital Inclusion Initiative</div>
+                    <div class="description">Bridging the digital divide</div>
+                </div>
+            </div>
+            <div class="item">
+                <div class="content">
+                    <div class="header">Clean Water Action</div>
+                    <div class="description">Water access and sanitation projects</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="ui header">Become a Partner</h2>
+    <div class="ui segment">
+        <p>Interested in becoming a FundFlow partner? We're always looking for organizations that share our vision of transparent, effective fundraising. As a partner, you can:</p>
+
+        <div class="ui bulleted list">
+            <div class="item">Connect with causes that align with your organization's mission</div>
+            <div class="item">Increase your visibility among socially-conscious donors</div>
+            <div class="item">Participate in co-branded campaigns</div>
+            <div class="item">Access our network of nonprofits and community organizations</div>
+        </div>
+
+        <a href="about.html" class="ui primary button">Contact Us About Partnership</a>
+    </div>
+</div>
+
+<!-- Footer -->
+<div class="ui inverted vertical footer segment">
+    <div class="ui container">
+        <div class="ui stackable inverted divided grid">
+            <div class="four wide column">
+                <h4 class="ui inverted header">About</h4>
+                <div class="ui inverted link list">
+                    <a href="/about" class="item">About Us</a>
+                    <a href="/about#contact" class="item">Contact Us</a>
+                </div>
+            </div>
+            <div class="four wide column">
+                <h4 class="ui inverted header">Services</h4>
+                <div class="ui inverted link list">
+                    <a href="/campaigns" class="item">Explore Campaigns</a>
+                    <a href="/create" class="item">Start a Campaign</a>
+                </div>
+            </div>
+            <div class="eight wide column">
+                <h4 class="ui inverted header">FundFlow</h4>
+                <p>Connecting donors with charities and individuals in need through transparent fundraising campaigns.</p>
+            </div>
+        </div>
+        <div class="ui inverted section divider"></div>
+        <div class="ui horizontal inverted small divided link list center aligned">
+            <span class="item">© 2025 FundFlow All Rights Reserved</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        function checkLoginStatus() {
+            const userData = localStorage.getItem('currentUser');
+
+            if (userData) {
+                const user = JSON.parse(userData);
+
+                $('#userSection').html(`
+                    <a href="/mycampaigns" class="item">My Campaigns</a>
+                    <a href="/login" class="item username-link">Hi, ${user.name}!</a>
+                    <a class="ui red button item" id="logoutButton" style="margin-left: 0.5em;">Logout</a>
+                `);
+
+                $('#logoutButton').on('click', function() {
+                    localStorage.removeItem('currentUser');
+                    window.location.href = '/';
+                });
+
+                return user;
+            } else {
+                $('#userSection').html(`
+                <a href="/login" class="item">Login</a>
+                <a href="/signup" class="ui primary button" style="margin-left: 0.5em;">Sign Up</a>
+            `);
+
+                return null;
+            }
+        }
+
+        const user = checkLoginStatus();
+
+    });
+</script>
+
+</body>
+</html>

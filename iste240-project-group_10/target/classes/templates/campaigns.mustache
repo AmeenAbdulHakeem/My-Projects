@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore Campaigns - FundFlow</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .ui.inverted.menu .item {
+            border: none !important;
+        }
+
+        .ui.inverted.menu {
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        .main-content {
+            padding-top: 7em;
+            flex: 1 0 auto;
+        }
+
+        .ui.inverted.vertical.footer.segment {
+            flex-shrink: 0;
+            margin-top: auto !important;
+            margin: 0 !important;
+            padding: 4em 0em !important;
+            background-color: #1b1c1d !important;
+        }
+
+        .campaign-card {
+            margin-bottom: 2em !important;
+        }
+
+        .campaign-meta {
+            margin-bottom: 1em;
+        }
+
+        .campaign-progress {
+            margin: 1em 0;
+        }
+
+        .ui.progress {
+            margin: 1em 0 0.5em 0;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding-top: 9em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding-top: 11em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<div class="ui inverted stackable fixed menu">
+    <a href="/" class="header item" style="font-size: x-large">FundFlow</a>
+    <div class="ui container">
+        <a href="/" class="header item">Home</a>
+        <a href="/campaigns" class="header item">Explore Campaigns</a>
+        <a href="/create" class="header item">Create Campaign</a>
+        <a href="/sponsors" class="header item">Partners & Sponsors</a>
+        <a href="/about" class="header item">About Us</a>
+        <div class="right menu" id="userSection">
+            <a href="/login" class="item">Login</a>
+            <a href="/signup" class="ui primary button" style="margin-left: 0.5em;">Sign Up</a>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+    <div class="ui container">
+        <h1 class="ui header">Explore Campaigns</h1>
+        <div class="ui divider"></div>
+
+        <div class="search-container">
+            <div class="ui fluid action input">
+                <input type="text" id="search-input" placeholder="Search campaigns by title...">
+                <button class="ui primary button" id="search-button">Search</button>
+                <button class="ui button" id="reset-search">Reset</button>
+            </div>
+        </div>
+        <br>
+        <div class="filter-section">
+            <h3 class="ui header">Filter by Category</h3>
+            <div class="ui form">
+                <div class="inline fields" id="category-filters">
+                    <div class="field">
+                        <div class="ui checkbox">
+                            <input type="checkbox" name="category" value="Healthcare">
+                            <label>Healthcare</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui checkbox">
+                            <input type="checkbox" name="category" value="Education">
+                            <label>Education</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui checkbox">
+                            <input type="checkbox" name="category" value="Environment">
+                            <label>Environment</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui checkbox">
+                            <input type="checkbox" name="category" value="Disaster Relief">
+                            <label>Disaster Relief</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui checkbox">
+                            <input type="checkbox" name="category" value="Animal Welfare">
+                            <label>Animal Welfare</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="inline fields">
+                    <div class="field">
+                        <div class="ui checkbox">
+                            <input type="checkbox" name="category" value="Arts & Culture">
+                            <label>Arts & Culture</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui checkbox">
+                            <input type="checkbox" name="category" value="Community Development">
+                            <label>Community Development</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui checkbox">
+                            <input type="checkbox" name="category" value="Children & Youth">
+                            <label>Children & Youth</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui checkbox">
+                            <input type="checkbox" name="category" value="Human Rights">
+                            <label>Human Rights</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui checkbox">
+                            <input type="checkbox" name="category" value="Other">
+                            <label>Other</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="ui primary button" id="apply-filters">Apply Filters</button>
+            <button class="ui button" id="reset-filters">Reset Filters</button>
+        </div>
+
+        <div id="campaigns-container">
+            <div class="ui active centered inline loader"></div>
+            <p class="center aligned">Loading campaigns...</p>
+        </div>
+
+        <div class="load-more-container">
+            <button class="ui primary button" id="load-more">Load More Campaigns</button>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<div class="ui inverted vertical footer segment">
+    <div class="ui container">
+        <div class="ui stackable inverted divided grid">
+            <div class="four wide column">
+                <h4 class="ui inverted header">About</h4>
+                <div class="ui inverted link list">
+                    <a href="/about" class="item">About Us</a>
+                    <a href="/about#contact" class="item">Contact Us</a>
+                </div>
+            </div>
+            <div class="four wide column">
+                <h4 class="ui inverted header">Services</h4>
+                <div class="ui inverted link list">
+                    <a href="/campaigns" class="item">Explore Campaigns</a>
+                    <a href="/create" class="item">Start a Campaign</a>
+                </div>
+            </div>
+            <div class="eight wide column">
+                <h4 class="ui inverted header">FundFlow</h4>
+                <p>Connecting donors with charities and individuals in need through transparent fundraising campaigns.</p>
+            </div>
+        </div>
+        <div class="ui inverted section divider"></div>
+        <div class="ui horizontal inverted small divided link list center aligned">
+            <span class="item">© 2025 FundFlow All Rights Reserved</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+
+        function checkLoginStatus() {
+            const userData = localStorage.getItem('currentUser');
+
+            if (userData) {
+                const user = JSON.parse(userData);
+
+                $('#userSection').html(`
+                    <a href="/mycampaigns" class="item">My Campaigns</a>
+                    <a href="/login" class="item username-link">Hi, ${user.name}!</a>
+                    <a class="ui red button item" id="logoutButton" style="margin-left: 0.5em;">Logout</a>
+                `);
+
+                $('#logoutButton').on('click', function() {
+                    localStorage.removeItem('currentUser');
+                    window.location.href = '/';
+                });
+
+                return user;
+            } else {
+                $('#userSection').html(`
+                    <a href="/login" class="item">Login</a>
+                    <a href="/signup" class="ui primary button" style="margin-left: 0.5em;">Sign Up</a>
+                `);
+
+                return null;
+            }
+        }
+
+        const user = checkLoginStatus();
+
+
+        $('.ui.checkbox').checkbox();
+
+        const campaignsPerPage = 5;
+        let currentPage = 1;
+        let allCampaigns = [];
+        let filteredCampaigns = [];
+        let searchTerm = '';
+        let selectedCategories = [];
+
+        function formatCampaignData(campaigns) {
+            return campaigns.map(campaign => {
+                const percentFunded = Math.min(100, Math.round((campaign.amountRaised / campaign.goal) * 100)) || 0;
+
+                let displayPercent = percentFunded + "% funded";
+                if (percentFunded <= 5) {
+                    displayPercent = percentFunded + "%";
+                }
+
+                const endDate = new Date(campaign.endDate);
+                const formattedEndDate = endDate.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+
+                return {
+                    ...campaign,
+                    percentFunded,
+                    displayPercent,
+                    formattedEndDate
+                };
+            });
+        }
+
+        function createCampaignCard(campaign) {
+            const card = $('<div>').addClass('ui raised segment campaign-card');
+
+            const header = $('<h2>').addClass('ui header campaign-header');
+            const titleLink = $('<a>')
+                    .attr('href', '/campaign?id=' + campaign.id)
+                    .text(campaign.title);
+            header.append(titleLink);
+
+            const meta = $('<div>').addClass('campaign-meta');
+
+            const creator = $('<div>').html('<strong>Created by:</strong> ' + campaign.name);
+            meta.append(creator);
+
+            if (campaign.sponsor) {
+                const sponsor = $('<div>').html('<strong>Sponsored by:</strong> ' + campaign.sponsor);
+                meta.append(sponsor);
+            }
+
+            const endDate = $('<div>').html('<strong>End Date:</strong> ' + campaign.formattedEndDate);
+            meta.append(endDate);
+
+            const category = $('<div>').html('<strong>Category:</strong> ' + campaign.category);
+            meta.append(category);
+
+            const amount = $('<div>').addClass('campaign-amount');
+            amount.append($('<div>').text('$' + campaign.amountRaised + ' raised'));
+            amount.append($('<div>').text('of $' + campaign.goal + ' goal'));
+
+            const progress = $('<div>').addClass('campaign-progress');
+            const progressBar = $('<div>')
+                    .addClass('ui indicating progress')
+                    .attr('data-percent', campaign.percentFunded);
+
+            const bar = $('<div>')
+                    .addClass('bar')
+                    .css('width', campaign.percentFunded + '%');
+
+            const progressText = $('<div>')
+                    .addClass('progress')
+                    .text(campaign.displayPercent);
+
+            bar.append(progressText);
+            progressBar.append(bar);
+            progress.append(progressBar);
+
+            card.append(header, meta, amount, progress);
+
+            return card;
+        }
+
+        function renderCampaigns() {
+            const container = $('#campaigns-container');
+            container.empty();
+
+            const campaignsToShow = filteredCampaigns.slice(0, currentPage * campaignsPerPage);
+
+            if (campaignsToShow.length === 0) {
+                container.html(
+                        '<div class="ui info message">' +
+                        '<div class="header">No campaigns found</div>' +
+                        '<p>Try adjusting your search or filter criteria.</p>' +
+                        '</div>'
+                );
+            } else {
+                campaignsToShow.forEach(campaign => {
+                    container.append(createCampaignCard(campaign));
+                });
+
+                $('.ui.progress').progress();
+            }
+
+            if (campaignsToShow.length >= filteredCampaigns.length) {
+                $('#load-more').hide();
+            } else {
+                $('#load-more').show();
+            }
+        }
+
+        function filterCampaigns() {
+            filteredCampaigns = allCampaigns;
+
+            if (searchTerm) {
+                filteredCampaigns = filteredCampaigns.filter(campaign =>
+                        campaign.title.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+            }
+
+            if (selectedCategories.length > 0) {
+                filteredCampaigns = filteredCampaigns.filter(campaign =>
+                        selectedCategories.includes(campaign.category)
+                );
+            }
+
+            currentPage = 1;
+            renderCampaigns();
+        }
+
+        $.ajax({
+            url: 'api/campaign',
+            type: 'GET',
+            dataType: 'json',
+            success: function(campaigns) {
+                allCampaigns = formatCampaignData(campaigns);
+                filteredCampaigns = allCampaigns;
+                renderCampaigns();
+            },
+            error: function(error) {
+                console.error('Error fetching campaigns:', error);
+            }
+        });
+
+        $('#load-more').on('click', function() {
+            currentPage++;
+            renderCampaigns();
+        });
+
+        $('#search-button').on('click', function() {
+            searchTerm = $('#search-input').val().trim();
+            filterCampaigns();
+        });
+
+        $('#reset-search').on('click', function() {
+            $('#search-input').val('');
+            searchTerm = '';
+            filterCampaigns();
+        });
+
+        $('#apply-filters').on('click', function() {
+            selectedCategories = [];
+            $('input[name="category"]:checked').each(function() {
+                selectedCategories.push($(this).val());
+            });
+            filterCampaigns();
+        });
+
+        $('#reset-filters').on('click', function() {
+            $('input[name="category"]').prop('checked', false);
+            $('.ui.checkbox').checkbox('uncheck');
+            selectedCategories = [];
+            filterCampaigns();
+        });
+    });
+</script>
+</body>
+</html>
